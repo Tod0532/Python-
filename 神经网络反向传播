@@ -1,0 +1,102 @@
+import numpy
+import scipy.special
+import matplotlib.pyplot
+%matplotlib inline
+
+class neuralNetwork:
+    # 初始化
+    def __init__(self,inputnodes,hiddennodes,outputnodes,learningrate):
+        self.inodes=inputnodes
+        self.hnodes=hiddennodes
+        self.onodes=outputnodes
+        
+        self.lr=learningrate
+        #权重连接 W11 W21 W12 W22
+        self.wih=numpy.random.normal(0.0,pow(self.hnodes,-0.5),(self.hnodes,self.inodes))
+        self.who=numpy.random.normal(0.0,pow(self.onodes,-0.5),(self.onodes,self.hnodes))
+        #激活函数
+        self.activation_function=lambda x:scipy.special.expit(x)
+        
+    def train(self,inputs_list,targets_list):
+        #输入及目标值，转置后写入数组中
+        inputs=numpy.array(inputs_list,ndmin=2).T
+        targets=numpy.array(targets_list,ndmin=2).T
+        #信号进入隐藏层
+        hidden_inputs=numpy.dot(self.wih,inputs)
+        #信号出隐藏层
+        hiddden_outputs=self.activation_function(hidden_inputs)
+        #进入输出层
+        final_inputs=numpy.dot(self.who,hiddden_outputs)
+        #输出层输出
+        final_outputs=self.activation_function(final_inputs)
+        #误差=目标输出值-实际输出值
+        output_errors=targets-final_outputs
+        #隐藏层节点反向传播的误差
+        hiddden_errors=numpy.dot(self.who.T,output_errors)
+        #更新隐藏层与输出层之间权重
+        self.who+=self.lr*numpy.dot((output_errors*final_outputs*(1.0-final_outputs)),numpy.transpose(hiddden_outputs))
+        #更新输入与隐藏间的权重
+        self.wih+=self.lr*numpy.dot((hiddden_errors*hiddden_outputs*(1.0-hiddden_outputs)),numpy.transpose(inputs))                   
+        
+    def query(self,inputs_list):
+        inputs=numpy.array(inputs_list,ndmin=2).T
+        #计算信号进入到隐藏层
+        hidden_inputs=numpy.dot(self.wih,inputs)
+        #隐藏层输出
+        hiddden_outputs=self.activation_function(hidden_inputs)
+        #进入输出层
+        final_inputs=numpy.dot(self.who,hiddden_outputs)
+        #输出层输出
+        final_outputs=self.activation_function(final_inputs)
+        
+        return final_outputs
+#初始化
+    input_nodes=784
+    hidden_nodes=200
+    output_nodes=10
+    learning_rate=0.1
+    n=neuralNetwork(input_nodes,hidden_nodes,output_nodes,learning_rate)
+
+    training_data_file=open("C:/Users/wang/Desktop/NeualNetwork/mnist_train.csv",'r')
+    training_data_list=training_data_file.readlines()
+    training_data_file.close()
+
+
+#训练数据
+    for record in training_data_list:
+        all_values=record.split(',')
+        inputs=(numpy.asfarray(all_values[1:])/255.0*0.99)+0.01
+        targets=numpy.zeros(output_nodes)+0.01
+        targets[int(all_values[0])]=0.99
+        n.train(inputs,targets)
+
+    test_data_file=open("C:/Users/wang/Desktop/NeualNetwork/mnist_test.csv",'r')
+    test_data_list=test_data_file.readlines()
+    test_data_file.close()
+
+    all_values=test_data_list[0].split(',')
+    print(all_values[0])
+    
+    试验所有测试集内记录
+    scorecard=[]
+    for record in test_data_list:
+        all_values=record.split(',')
+        correct_label=int(all_values[0])
+        print(correct_label,"correct label")
+        inputs=(numpy.asfarray(all_values[1:])/255.0*0.99)+0.01
+        out_puts=n.query(inputs)
+        label=numpy.argmax(out_puts)
+        print(label,"netword's answer:")
+        if(label==correct_label):
+            scorecard.append(1)
+        else:
+            scorecard.append(0)
+    
+    
+    
+    print(scorecard)
+    
+    scorecard_array=numpy.asarray(scorecard)
+    print("performance=",scorecard_array.sum()/scorecard_array.size)
+
+    
