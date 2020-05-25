@@ -1,0 +1,57 @@
+一、Python——assert（断言函数）
+1，断言函数的作用
+　　python assert断言是声明其布尔值必须为真的判定，如果发生异常就说明表达示为假。可以理解assert断言语句为raise-if-not，用来测试表示式，其返回值为假，就会触发异常。
+
+2，常用格式
+　　assert 1==1
+　　assert 2+2==2*2
+　　assert len(['my boy',12])<10
+　　assert range(4)==[0,1,2,3]
+
+3，如何为assert断言语句添加异常参数
+　　assert 表达式 [, 参数]
+
+　　assert len(lists) >=5,'列表元素个数小于5'
+
+二、Python中的np.max 与 np.maximum
+np.max(a, axis=None, out=None, keepdims=False)
+
+求序列的最值
+最少接收一个参数
+axis：默认为列向（也即 axis=0），axis = 1 时为行方向的最值；
+np.maximum(X, Y, out=None)
+
+X 与 Y 逐位比较取其大者；
+最少接收两个参数
+
+三、直接引用、浅拷贝、深拷贝的区别
+可以通过以下实例说明：
+
+# !/usr/bin/python
+# -*- coding: UTF-8 -*-
+ 
+import copy
+ 
+D1 = {'user': 'runoob', 'num': [1, 2, 3]} # 原始数据
+D2 = D1  # 直接引用：D2和D1整体指向同一对象。
+D3 = D1.copy()  # 浅拷贝：D3和D1的父对象是一个独立的对象，但是他们的子对象还是指向同一对象。
+D4 = copy.deepcopy(D1)  # 深拷贝：D4和D1的整体是一个独立的对象。
+ 
+D1['user'] = 'root' # 修改父对象D1
+D1['num'].remove(1) # 修改父对象D1中的[1, 2, 3]列表子对象
+ 
+print('原始数据:',{'user': 'runoob', 'num': [1, 2, 3]}) # 原始数据
+print('改后数据:',D1) # 父子都修改过的
+print('直接引用:',D2) # 父子都变(直接引用)
+print('浅拷贝:',D3) # 父不变，子变(浅拷贝)
+print('深拷贝:',D4) # 父子都不变(深拷贝)
+实例中 D2 其实是 D1 的赋值引用（别名），所以输出结果都是一致的；D3 是对D1的浅拷贝，父对象不会随D1修改而修改，子对象随D1的修改而修改；D4 是对D1的深拷贝，父对象和子对象都不会随D1修改而修改。
+
+输出结果如下：
+原始数据: {'user': 'runoob', 'num': [1, 2, 3]}
+改后数据: {'user': 'root', 'num': [2, 3]}
+赋值引用: {'user': 'root', 'num': [2, 3]}
+浅拷贝: {'user': 'runoob', 'num': [2, 3]}
+深拷贝: {'user': 'runoob', 'num': [1, 2, 3]}
+
+  
